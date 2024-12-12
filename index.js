@@ -1,6 +1,5 @@
 const express = require('express');
 const http = require('http');
-// const { setupWebSocket } = require('./utils/websocket'); // Remove this line
 const authRoutes = require('./routes/authRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const messageRoutes = require('./routes/messageRoutes');
@@ -11,8 +10,6 @@ const cors = require('cors');
 app.use(cors({ origin: '*' }));
 
 const server = http.createServer(app);
-// // Initialize WebSocket
-// setupWebSocket(server); // Remove this line
 
 const PORT = process.env.PORT || 3000;
 
@@ -25,7 +22,7 @@ app.use('/rooms', roomRoutes);
 app.use('/messages', messageRoutes);
 app.use('/users', userRoutes);
 
-// **Update this line to align with frontend image URLs**
+// Serve static files for uploaded images
 app.use('/uploads/messageMedia', express.static('public/uploads/messageMedia'));
 
 // Start the server

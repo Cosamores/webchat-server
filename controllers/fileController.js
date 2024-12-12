@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/prismaConnect');
 
 exports.uploadFile = async (req, res) => {
   const { roomId, message: messageData } = req.body;

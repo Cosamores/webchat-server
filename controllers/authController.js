@@ -1,14 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
-const { validate } = require('../middlewares/zod-validator');
 
-const prisma = new PrismaClient();
+const prisma = require('../utils/prismaConnect');
+
 const SECRET_KEY = process.env.SECRET_KEY;
 
 exports.register = async (req, res) => {
   const { username, password } = req.body;
-  const validation = validate(req.body, 'userSchema');
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {

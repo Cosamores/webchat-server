@@ -1,6 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
 
-const prisma = new PrismaClient();
+const prisma = require('../utils/prismaConnect');
 
 exports.searchUsers = async (req, res) => {
   const { username } = req.query;

@@ -10,7 +10,7 @@ router.post('/join', authenticate, roomController.joinRoom);
 router.post('/', authenticate, roomController.listRooms);
 router.get('/name/:roomId', authenticate, roomController.getRoomName);
 router.put('/edit/:roomId', authenticate, roomController.editRoom);
-router.delete('/delete/:roomId', authenticate, roomController.deleteRoom);
+router.put('/delete', authenticate, roomController.deleteRoom); // Change to PUT method
 router.get('/:roomId/users', authenticate, roomController.getRoomUsers);
 
 module.exports = router;

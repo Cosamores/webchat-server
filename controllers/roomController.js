@@ -1,6 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require('../utils/prismaConnect');
 
 exports.createRoom = async (req, res) => {
   const { name } = req.body;
@@ -27,7 +25,7 @@ exports.joinRoom = async (req, res) => {
 
   try {
     const room = await prisma.room.findUnique({
-      where: { id: roomId },
+      where: { id: parseInt(roomId) },
       select: { creatorId: true },
     });
 
@@ -39,7 +37,7 @@ exports.joinRoom = async (req, res) => {
     await prisma.userRoom.create({
       data: {
         userId: req.userId,
-        roomId: roomId,
+        roomId: parseInt(roomId),
       },
     });
 
@@ -55,7 +53,7 @@ exports.listRooms = async (req, res) => {
     const { userId } = req.body;
 
     const userRooms = await prisma.userRoom.findMany({
-      where: { userId },
+      where: { userId: parseInt(userId) },
       select: { roomId: true },
     });
 
@@ -67,7 +65,7 @@ exports.listRooms = async (req, res) => {
         AND: [
           {
             OR: [
-              { creatorId: userId },
+              { creatorId: parseInt(userId) },
               { id: { in: roomIds } },
             ],
           },
@@ -88,7 +86,7 @@ exports.getRoomUsers = async (req, res) => {
 
   try {
     const room = await prisma.room.findUnique({
-      where: { id: roomId },
+      where: { id: parseInt(roomId) },
       include: { users: true },
     });
 
@@ -112,7 +110,7 @@ exports.editRoom = async (req, res) => {
 
   try {
     const room = await prisma.room.update({
-      where: { id: roomId },
+      where: { id: parseInt(roomId) }, // Ensure roomId is parsed as an integer
       data: { name }, // Use the extracted 'name' to update
     });
 
@@ -125,10 +123,10 @@ exports.editRoom = async (req, res) => {
 
 exports.deleteRoom = async (req, res) => {
   const { roomId } = req.body;
-  // console.log('roomId na controller deleteRoom', roomId); // Log roomId for debugging
+   console.log('roomId na controller deleteRoom', roomId); // Log roomId for debugging
   try {
     const room = await prisma.room.findUnique({
-      where: { id: roomId }, 
+      where: { id: parseInt(roomId) }, 
       select: { creatorId: true },
     });
 
@@ -136,13 +134,13 @@ exports.deleteRoom = async (req, res) => {
       return res.status(404).json({ error: 'Sala não encontrada' });
     }
 
-    if (room.creatorId !== req.userId) {
+    if (parseInt(room.creatorId) !== parseInt(req.userId)) {
       return res.status(403).json({ error: 'Você não tem permissão para deletar esta sala' });
     }
 
     // Soft delete the room
     await prisma.room.update({
-      where: { id: roomId },
+      where: { id: parseInt(roomId) },
       data: { deleted: true },
     });
 
@@ -161,7 +159,7 @@ exports.leaveRoom = async (req, res) => {
     const userRoom = await prisma.userRoom.findFirst({
       where: {
         userId: req.userId,
-        roomId,
+        roomId: parseInt(roomId),
       },
     });
 
@@ -186,13 +184,12 @@ exports.getRoomName = async (req, res) => {
 
   try {
     const room = await prisma.room.findUnique({
-      where: { id: roomId }
+      where: { id: parseInt(roomId) }, // Ensure roomId is parsed as an integer
     });
 
     if (!room) {
       return res.status(404).json({ error: 'Sala não encontrada' });
     }
-    // console.log(room.name);
     res.status(200).json({ name: room.name });
   } catch (error) {
     console.error('Erro ao buscar nome da sala:', error);

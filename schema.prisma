@@ -1,6 +1,6 @@
 datasource db {
-  provider = "mongodb"
-  url      = env("MONGODB_URI")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -8,25 +8,25 @@ generator client {
 }
 
 model User {
-  id         String        @id @default(auto()) @map("_id") @db.ObjectId
-  created_at DateTime      @default(now())
-  username   String        @unique
+  id         Int          @id @default(autoincrement())
+  created_at DateTime     @default(now())
+  username   String       @unique
   password   String
-  rooms      UserRoom[]    @relation("UserRooms")
-  messages   Message[]     @relation("UserMessages")
-  createdRooms Room[]      @relation("RoomCreator")
+  rooms      UserRoom[]   @relation("UserRooms")
+  messages   Message[]    @relation("UserMessages")
+  createdRooms Room[]     @relation("RoomCreator")
 
   @@map("users")
 }
 
 model Room {
-  id         String        @id @default(auto()) @map("_id") @db.ObjectId
-  created_at DateTime      @default(now())
+  id         Int          @id @default(autoincrement())
+  created_at DateTime     @default(now())
   name       String
-  creatorId  String        @db.ObjectId
-  creator    User          @relation(fields: [creatorId], references: [id], name: "RoomCreator")
-  users      UserRoom[]    @relation("RoomUsers")
-  messages   Message[]     @relation("RoomMessages")
+  creatorId  Int
+  creator    User         @relation(fields: [creatorId], references: [id], name: "RoomCreator")
+  users      UserRoom[]   @relation("RoomUsers")
+  messages   Message[]    @relation("RoomMessages")
   url        String?
   deleted    Boolean?     
 
@@ -34,11 +34,11 @@ model Room {
 }
 
 model Message {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
   content    String?
-  senderId   String   @db.ObjectId
-  roomId     String   @db.ObjectId
+  senderId   Int
+  roomId     Int
   sender     User     @relation(fields: [senderId], references: [id], name: "UserMessages")
   room       Room     @relation(fields: [roomId], references: [id], name: "RoomMessages")
   fileUrl    String?  
@@ -48,9 +48,9 @@ model Message {
 }
 
 model UserRoom {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
-  roomId     String   @db.ObjectId
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  roomId     Int
   user       User     @relation(fields: [userId], references: [id], name: "UserRooms")
   room       Room     @relation(fields: [roomId], references: [id], name: "RoomUsers")
 
